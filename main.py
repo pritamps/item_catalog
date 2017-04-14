@@ -28,6 +28,20 @@ def home_page():
                            items=items)
 
 
+@app.route('/catalog/<string:category_name>/items')
+def category_json(category_name):
+    """
+    JSON endpoint an individual category
+    """
+    categories = session.query(Category).all()
+    category = session.query(Category).filter_by(name=category_name).one()
+    items = session.query(Item).filter_by(category=category).all()
+    return render_template('category_items.html',
+                           category=category,
+                           categories=categories,
+                           items=items)
+
+
 @app.route('/hello')
 def hello_world():
     """
@@ -55,13 +69,12 @@ def item_json(category_id, item_id):
     return jsonify(item.serialize)
 
 
-@app.route('/category/<int:category_id>/json')
-def category_json(category_id):
+@app.route('/category/<int:category_id>/items')
+def category_items(category_id):
     """
-    JSON endpoint an individual category
+    JSON endpoint for all items in a single category
     """
-    category = session.query(Category).filter_by(id=category_id).one()
-    return jsonify(category.serialize)
+    items = session.query(Item).filter_by(category_id=category_id).all()
 
 
 @app.route('/category/<int:category_id>/items/json')

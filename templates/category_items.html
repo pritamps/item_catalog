@@ -15,9 +15,9 @@
       {% endfor %}
     </div>
     <div class="col-md-9 text-right">
-      <h2 class="text-uppercase">Recently added items</h2>
+      <h2 class="text-uppercase">{{ category.name }} Items ( {{ items|length }} items )</h2>
       {% for i in items %}
-        {{i.name}}
+        {{ i.name }}
         <br>
       {% endfor %}
     </div>
