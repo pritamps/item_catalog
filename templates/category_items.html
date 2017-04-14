@@ -17,7 +17,7 @@
     <div class="col-md-9 text-right">
       <h2 class="text-uppercase">{{ category.name }} Items ( {{ items|length }} items )</h2>
       {% for i in items %}
-        {{ i.name }}
+        <a href="/catalog/{{category.name}}/{{i.name}}">{{i.name}}</a>
         <br>
       {% endfor %}
     </div>

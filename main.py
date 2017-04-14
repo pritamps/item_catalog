@@ -29,9 +29,9 @@ def home_page():
 
 
 @app.route('/catalog/<string:category_name>/items')
-def category_json(category_name):
+def category_list(category_name):
     """
-    JSON endpoint an individual category
+    Endpoint for category items
     """
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(name=category_name).one()
@@ -40,6 +40,17 @@ def category_json(category_name):
                            category=category,
                            categories=categories,
                            items=items)
+
+
+@app.route('/catalog/<string:category_name>/<string:item_name>')
+def item_detail_page(category_name, item_name):
+    """
+    JSON endpoint for an individual item
+    """
+    category = session.query(Category).filter_by(name=category_name).one()
+    item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+    return render_template('item_detail.html',
+                           item=item)
 
 
 @app.route('/hello')
