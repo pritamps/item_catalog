@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database
 
 
 Base = declarative_base()
@@ -77,11 +78,15 @@ class Item(Base):
 
 # Create an engine that stores data in the local directory's
 # sqlalchemy_example.db file.
-db_engine = create_engine('sqlite:///item_catalog.db')
+# db_engine = create_engine('postgresql:///vagrant:vagrant@localhost/item_catalog')
+engine = create_engine("postgresql:///item_catalog")
+if not database_exists(engine.url):
+    create_database(engine.url)
+
 
 # Create all tables in the engine. This is equivalent to "Create Table"
 # statements in raw SQL.
 
 # Create all tables in the engine. This is equivalent to "Create Table"
 # statements in raw SQL.
-Base.metadata.create_all(db_engine)
+Base.metadata.create_all(engine)

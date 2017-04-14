@@ -2,14 +2,30 @@
 
 {% block content %}
 
-  {% for c in categories %}
-    {{ c.name }}
-    <br><br>
-  {% endfor %}
+  <div class="container">
 
-  {% for i in items %}
-    {{ i.name }}
+  <div id="header" class="row">
+
+
+    <div class="col-md-3">
+      <h2 class="text-uppercase">Categories</h2>
+      {% for c in categories %}
+        {{ c.name }}
+        <br>
+      {% endfor %}
+    </div>
+    <div class="col-md-9 text-right">
+      <h2 class="text-uppercase">Recently added items</h2>
+      {% for i in items %}
+        {{ i.name }}
+        <br>
+      {% endfor %}
+    </div>
+
+
     <br><br>
-  {% endfor %}
+  </div>
+  </div>
+
 
 {% endblock %}

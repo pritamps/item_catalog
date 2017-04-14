@@ -7,7 +7,7 @@ from database_setup import Category, Item, Base
 app = Flask(__name__)
 
 # Connect to the DB
-engine = create_engine('sqlite:///item_catalog.db')
+engine = create_engine('postgresql:///item_catalog')
 Base.metadata.bind = engine
 
 # Start DB session
@@ -21,9 +21,11 @@ def home_page():
     The main page, i.e. list of categories, and most recently added items
     """
     categories = session.query(Category).all()
-    items = session.query(Item).all()
+    items = session.query(Item).order_by(Item.time_created.desc()).limit(10)
     # return "This page will show all my restaurants"
-    return render_template('landing_page.html', categories=categories, items=items)
+    return render_template('landing_page.html',
+                           categories=categories,
+                           items=items)
 
 
 @app.route('/hello')
@@ -42,22 +44,31 @@ def hello_world():
         items.extend(session.query(Item).filter_by(category=category).all())
 
     return jsonify(list=[i.serialize for i in items])
-    return "Hello World!"
+
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/json')
 def item_json(category_id, item_id):
+    """
+    JSON endpoint for an individual item
+    """
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(item.serialize)
 
 
 @app.route('/category/<int:category_id>/json')
 def category_json(category_id):
+    """
+    JSON endpoint an individual category
+    """
     category = session.query(Category).filter_by(id=category_id).one()
     return jsonify(category.serialize)
 
 
 @app.route('/category/<int:category_id>/items/json')
 def category_items_json(category_id):
+    """
+    JSON endpoint for all items in a single category
+    """
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(list=[i.serialize for i in items])
 
