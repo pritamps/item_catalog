@@ -21,8 +21,8 @@ class Category(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
-
-    def to_json(self):
+    @property
+    def serialize(self):
         """
         Return dictionary of current category in nice JSON format
         """
@@ -34,8 +34,8 @@ class Category(Base):
             'time_updated': self.time_updated
         }
 
-
-    def to_mini_json(self):
+    @property
+    def serialize_mini(self):
         """
         Return dictionary of current category in nice JSON format
         including only major info
@@ -60,14 +60,15 @@ class Item(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
-    def to_json(self):
+    @property
+    def serialize(self):
         """
         Return dictionary of current object in nice JSON format
         """
         return {
             'id': self.id,
             'name': self.name,
-            'category': self.category.to_mini_json(),
+            'category': self.category.serialize_mini,
             'description': self.description,
             'time_created': self.time_created,
             'time_updated': self.time_updated
