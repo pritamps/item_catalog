@@ -11,6 +11,12 @@
       <h2 class="text-uppercase">{{item.name}}</h2>
       Description: {{item.description}}
 
+    <br>
+    {% if 'username' in login_session %}        
+        <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/edit">Edit</a> |
+        <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/delete">Delete</a>
+    {% endif %}
+
 
     <br><br>
   </div>

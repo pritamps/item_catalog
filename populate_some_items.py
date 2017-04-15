@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from time import sleep
 
-from database_setup import Category, Item, Base
+from database_setup import Category, Item, Base, User
 
 engine = create_engine('postgresql:///item_catalog')
 # Bind the engine to the metadata of the Base class so that the
@@ -20,10 +20,12 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
+user = User(email="pritamps+firstuser@gmail.com", name="God User")
 
 # ---- FANTASY BOOKS BEGIN ----
 category_books = Category(name="Fantasy Book Series",
-                          description="Some of my favourite fantasy book series")
+                          description="Some of my favourite fantasy book series",
+                          creator=user)
 
 session.add(category_books)
 session.commit()
@@ -32,7 +34,8 @@ sleep(1)
 
 book1 = Item(name="The Book of the New Sun",
              description="Fantasy series set in a future where the sun is dying out",
-             category=category_books)
+             category=category_books,
+             creator=user)
 
 session.add(book1)
 session.commit()
@@ -41,14 +44,16 @@ sleep(1)
 
 book2 = Item(name="The Earthsea Chronicles",
              description="Harry Potter's got nothing on the Earthsea Chronicles",
-             category=category_books)
+             category=category_books,
+             creator=user)
 
 session.add(book2)
 session.commit()
 
 book3 = Item(name="The Golden Compass",
              description="A lovely series of books suitable for both kids and adults",
-             category=category_books)
+             category=category_books,
+             creator=user)
 
 session.add(book3)
 session.commit()
@@ -58,7 +63,8 @@ sleep(1)
 
 # ---- SCIFI MOVIES BEGIN ----
 category_books = Category(name="Scifi Movies", 
-                          description="Some of my favourite SciFi movies")
+                          description="Some of my favourite SciFi movies",
+                          creator=user)
 
 session.add(category_books)
 session.commit()
@@ -66,7 +72,8 @@ sleep(1)
 
 movie1 = Item(name="The Fifth Element",
               description="Not much science, but a crazy amount of fun",
-              category=category_books)
+              category=category_books,
+              creator=user)
 
 session.add(movie1)
 session.commit()
@@ -75,7 +82,8 @@ sleep(1)
 
 movie2 = Item(name="Arrival",
               description="New movie that takes the time to be cool",
-              category=category_books)
+              category=category_books,
+              creator=user)
 
 session.add(movie2)
 session.commit()

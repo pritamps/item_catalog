@@ -12,6 +12,7 @@ To run the python code, you need (in addition to standard python packages):
 1. flask: the web framework of choice here
 2. sqlalchemy: the ORM solution of choice
 3. sqlalchemy-utils: this package contains some nice utils to help us deal with a few of Postgres' quirks
+4. oaut2client: for enabling authentication/authorization related things
 
 The python packages needed are collected in `extra_requirements.txt` and can be installed by running:
 

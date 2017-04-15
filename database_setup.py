@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func, Boolean, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -8,6 +8,22 @@ from sqlalchemy_utils import database_exists, create_database
 
 
 Base = declarative_base()
+
+
+class User(Base):
+    """
+    Definitions for the user table.
+    The authentication scheme and hence this class, is based on this
+    tutorial: http://bitwiser.in/2015/09/09/add-google-login-in-flask.html
+    """
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True)
+    email = Column(String(100), unique=True, nullable=False)
+    name = Column(String(100), nullable=True)
+    avatar = Column(String(200))
+    active = Column(Boolean, default=True)
+    tokens = Column(Text)
+    time_created = Column(DateTime, server_default=func.now())
 
 
 class Category(Base):
@@ -19,6 +35,8 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250))
     description = Column(String(2500))
+    creator = relationship(User)
+    creator_id = Column(Integer, ForeignKey('user.id'))
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -58,6 +76,8 @@ class Item(Base):
     description = Column(String(250), nullable=True)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    creator = relationship(User)
+    creator_id = Column(Integer, ForeignKey('user.id'))
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 

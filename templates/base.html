@@ -9,7 +9,8 @@
     <link type="text/css" href="/static/main.css" rel="stylesheet">
 
     <title>Item Catalog</title>
-
+      {% block head %}
+      {% endblock %}
   </head>
 
   <body>
@@ -18,14 +19,17 @@
     </a>
 
     <div class="login-area">
-      {% if user %}
-        {{user.name}} (<a class="login-link" href="/logout">logout</a>)
+      {% if 'username' in login_session or (is_login_page is defined) %}
+        {% if not is_login_page is defined %}
+          {{login_session['username']}} (<a class="login-link" href="/gdisconnect">logout</a>)
+        {% endif %}
       {% else %}
         <a class="login-link" href="/login">login</a>
-        |
-        <a class="login-link" href="/signup">signup</a>
       {% endif %}
     </div>
+    
+    {% block body_override %}
+    {% endblock %}
 
     <div id="content">
       {% block content %}
