@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta charset="utf-8">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
 
-  <link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
-  <link type="text/css" href="/static/bootstrap.min.css" rel="stylesheet">
-  <link type="text/css" href="/static/style.css" rel="stylesheet">
-  <title>Item Catalog</title>
-</head>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
+    <link type="text/css" href="/static/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="/static/main.css" rel="stylesheet">
 
-<body>
-  <a href="/" class="main-title">
-    Item Catalog
-  </a>
+    <title>Item Catalog</title>
 
-  <div class="login-area">
-    {% if user %}
-      {{user.name}} (<a class="login-link" href="/logout">logout</a>)
-    {% else %}
-      <a class="login-link" href="/login">login</a>
-      |
-      <a class="login-link" href="/signup">signup</a>
-    {% endif %}
-  </div>
+  </head>
 
-  <div id="content">
-  {% block content %}
-  {% endblock %}
-  </div>
-</body>
+  <body>
+    <a href="/" class="main-title">
+      Item Catalog
+    </a>
+
+    <div class="login-area">
+      {% if user %}
+        {{user.name}} (<a class="login-link" href="/logout">logout</a>)
+      {% else %}
+        <a class="login-link" href="/login">login</a>
+        |
+        <a class="login-link" href="/signup">signup</a>
+      {% endif %}
+    </div>
+
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
 
 </html>
