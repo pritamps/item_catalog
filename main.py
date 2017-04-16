@@ -5,7 +5,7 @@ import string
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Category, Item, Base
+from database_setup import Category, Item, Base, User
 from config import config
 
 from oauth2client.client import flow_from_clientsecrets
@@ -115,9 +115,22 @@ def gconnect():
 
     data = answer.json()
 
-    login_session['username'] = data['name']
-    login_session['picture'] = data['picture']
-    login_session['email'] = data['email']
+    email = data['email']
+    user = session.query(User).filter_by(email=email).first()
+    if user is None:
+        print "YO: New user"
+        user = User()
+        user.email = email
+        user.avatar = data['picture']
+        user.name = data['name']
+        session.add(user)
+        session.commit()
+    else:
+        print "YO: User exists dude, be happy!"
+
+    login_session['username'] = user.name
+    login_session['picture'] = user.avatar
+    login_session['email'] = user.email
 
     output = ''
     output += '<h1>Welcome, '
