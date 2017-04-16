@@ -209,8 +209,7 @@ def category_list(category_name):
     return render_template('category_items.html',
                            category=category,
                            categories=categories,
-                           items=items,
-                           login_session=login_session)
+                           items=items)
 
 
 @app.route('/catalog/<string:category_name>/<string:item_name>')
@@ -221,8 +220,7 @@ def item_detail_page(category_name, item_name):
     category = session.query(Category).filter_by(name=category_name).one()
     item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
     return render_template('item_detail.html',
-                           item=item,
-                           login_session=login_session)
+                           item=item)
 
 
 @app.route('/logout')
