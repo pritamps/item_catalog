@@ -16,6 +16,8 @@ class User(Base, UserMixin):
     Definitions for the user table.
     The authentication scheme and hence this class, is based on this
     tutorial: http://bitwiser.in/2015/09/09/add-google-login-in-flask.html
+
+    UserMixin allows us to use flask's login_user, which is pretty nice
     """
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
