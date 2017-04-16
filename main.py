@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template, make_response
 from flask import session as login_session, flash, redirect
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 import random
 import string
 
@@ -18,6 +19,11 @@ import requests
 app = Flask(__name__)
 app.config.from_object(config['default'])
 
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.session_protection = "strong"
+
+
 # Some constants (following Udacity FSND classroom material)
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
@@ -31,6 +37,14 @@ Base.metadata.bind = engine
 # Start DB session
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """
+    Allow login manager to get current user
+    """
+    return session.query(User).get(int(user_id))
 
 
 @app.route('/login')
@@ -118,19 +132,15 @@ def gconnect():
     email = data['email']
     user = session.query(User).filter_by(email=email).first()
     if user is None:
-        print "YO: New user"
         user = User()
         user.email = email
         user.avatar = data['picture']
         user.name = data['name']
+        user.tokens = credentials.access_token
         session.add(user)
         session.commit()
-    else:
-        print "YO: User exists dude, be happy!"
 
-    login_session['username'] = user.name
-    login_session['picture'] = user.avatar
-    login_session['email'] = user.email
+    login_user(user)
 
     output = ''
     output += '<h1>Welcome, '
@@ -139,7 +149,7 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    flash("you are now logged in as " + user.name)
     print "done!"
     return redirect('/')
 
@@ -185,8 +195,7 @@ def home_page():
     # return "This page will show all my restaurants"
     return render_template('landing_page.html',
                            categories=categories,
-                           items=items,
-                           login_session=login_session)
+                           items=items)
 
 
 @app.route('/catalog/<string:category_name>/items')
@@ -214,6 +223,13 @@ def item_detail_page(category_name, item_name):
     return render_template('item_detail.html',
                            item=item,
                            login_session=login_session)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
 
 
 @app.route('/hello')

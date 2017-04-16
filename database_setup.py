@@ -4,13 +4,14 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func, Bool
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from flask_login import UserMixin
 from sqlalchemy_utils import database_exists, create_database
 
 
 Base = declarative_base()
 
 
-class User(Base):
+class User(Base, UserMixin):
     """
     Definitions for the user table.
     The authentication scheme and hence this class, is based on this
@@ -21,7 +22,7 @@ class User(Base):
     email = Column(String(100), unique=True, nullable=False)
     name = Column(String(100), nullable=True)
     avatar = Column(String(200))
-    active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True)
     tokens = Column(Text)
     time_created = Column(DateTime, server_default=func.now())
 

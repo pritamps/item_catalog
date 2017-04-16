@@ -19,9 +19,9 @@
     </a>
 
     <div class="login-area">
-      {% if 'username' in login_session or (is_login_page is defined) %}
+      {% if current_user.is_authenticated or (is_login_page is defined) %}
         {% if not is_login_page is defined %}
-          {{login_session['username']}} (<a class="login-link" href="/gdisconnect">logout</a>)
+          {{current_user.name}} (<a class="login-link" href="/logout">logout</a>)
         {% endif %}
       {% else %}
         <a class="login-link" href="/login">login</a>
