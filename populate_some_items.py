@@ -20,7 +20,8 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-user = User(email="pritamps+firstuser@gmail.com", name="God User")
+user_me = User(email="pritamps+firstuser@gmail.com", name="God User")
+user = session.query(User).filter_by(email="pritamps@gmail.com").first()
 
 # ---- FANTASY BOOKS BEGIN ----
 category_books = Category(name="Fantasy Book Series",

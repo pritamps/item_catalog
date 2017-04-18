@@ -12,9 +12,11 @@
       Description: {{item.description}}
 
     <br>
-    {% if current_user.is_authenticated %}        
-        <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/edit">Edit</a> |
-        <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/delete">Delete</a>
+    {% if current_user.is_authenticated %}
+        {% if current_user == creator %}        
+          <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/edit">Edit</a> |
+          <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/delete">Delete</a>
+        {% endif %}
     {% endif %}
 
 
