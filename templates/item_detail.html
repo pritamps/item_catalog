@@ -2,7 +2,6 @@
 
 {% block content %}
 
-  <div class="container">
 
   <div id="header" class="row">
 
@@ -10,18 +9,15 @@
     <div class="col-md-12">
       <h2 class="text-uppercase">{{item.name}}</h2>
       Description: {{item.description}}
-
-    <br>
-    {% if current_user.is_authenticated %}
-        {% if current_user == creator %}        
-          <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/edit">Edit</a> |
-          <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/delete">Delete</a>
-        {% endif %}
-    {% endif %}
-
-
+      <br>
+      {% if current_user.is_authenticated %}
+          {% if current_user == creator %}        
+            <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/edit">Edit</a> |
+            <a class="edit-delete-link" href="/catalog/{{item.category.name}}/{{item.name}}/delete">Delete</a>
+          {% endif %}
+      {% endif %}
     <br><br>
-  </div>
+    </div>
   </div>
 
 

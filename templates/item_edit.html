@@ -1,0 +1,29 @@
+{% extends "base.html" %} 
+
+{% block content %}
+
+<form method="post">
+    {% if current_user.is_authenticated %}
+        <h2>Edit Item</h2>
+        {% if current_user == creator %}  
+            <div class="row">
+                <div class="col-md-3"> <h4> Name </h4> </div> 
+                <div class="col-md-9"> <textarea name="name">{{item.name}}</textarea> </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"> <h4> Description </h4> </div> 
+                <div class="col-md-9"> <textarea name="description">{{item.description}}</textarea> </div>
+            </div>
+            <div class="error">{{error}}</div>
+
+            <div style="text-align:center;">
+                <input type="submit">
+            </div>
+        {% else %}
+            <div class="error">Only the creator of the item can edit. Sorry, but nice try :)</div>
+        {% endif %}
+    {% else %}
+         <div class="error">Only logged in users can edit items. But nice try :)</div>
+    {% endif %}
+</form>
+{% endblock %}

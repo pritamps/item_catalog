@@ -63,7 +63,6 @@ def gconnect():
     """
     Deal with response after clicking on the Google Sign-in button
     """
-    print "Hey"
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -72,7 +71,6 @@ def gconnect():
     # Obtain authorization code
     code = request.data
 
-    print "Hey"
     try:
         # Upgrade the authorization code into a credentials object
         oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
@@ -84,7 +82,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "Hey 2"
     # Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
@@ -97,7 +94,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "Hey 3"
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
@@ -106,7 +102,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "Hey 4"
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
@@ -115,14 +110,11 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "Hey 5"
     # Check if user is already authenticated
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        print "Hey Logged in!"
-        # Get user info
-        print "Hey 6"
+        # Get user info        print "Hey 6"
         userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
         params = {'access_token': credentials.access_token, 'alt': 'json'}
         answer = requests.get(userinfo_url, params=params)
@@ -133,13 +125,12 @@ def gconnect():
         user = session.query(User).filter_by(email=email).first()
         login_user(user)
 
-        response = make_response(json.dumps('Current user was already connected.'),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
+        rsp = make_response(json.dumps('Current user was already connected.'),
+                            200)
+        rsp.headers['Content-Type'] = 'application/json'
         return redirect('/')
 
     # Get user info
-    print "Hey 6"
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -210,6 +201,35 @@ def item_detail_page(category_name, item_name):
     return render_template('item_detail.html',
                            item=item,
                            creator=item.creator)
+
+
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['POST', 'GET'])
+def item_edit_page(category_name, item_name):
+    """
+    JSON endpoint for an individual item
+    """
+
+    if request.method == 'GET':
+        category = session.query(Category).filter_by(name=category_name).one()
+        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        return render_template('item_edit.html',
+                               item=item,
+                               creator=item.creator)
+
+    elif request.method == 'POST':
+        category = session.query(Category).filter_by(name=category_name).one()
+        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        if item is None:
+            item = Item(category=category,
+                        creator=current_user,
+                        description=request.form['description'],
+                        name=request.form['name'])
+            session.add(item)
+        else:
+            item.name = request.form['name']
+            item.description = request.form['description']
+        session.commit()
+        return redirect('/')
 
 
 @app.route('/logout')
