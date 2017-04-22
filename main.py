@@ -253,7 +253,7 @@ def item_edit_page(category_name, item_name=None):
                                item=item,
                                creator=item.creator,
                                categories=categories,
-                               item_category=item.category
+                               item_category=item.category,
                                error=error)
 
     elif request.method == 'POST':
@@ -284,6 +284,9 @@ def item_edit_page(category_name, item_name=None):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete')
 @login_required
 def delete(category_name, item_name):
+    """
+    Method called when delete is clicked on an item
+    """
     try:
         category = session.query(Category).filter_by(
             name=category_name).one()
@@ -327,6 +330,10 @@ def delete(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete_confirmed')
 @login_required
 def delete_item(category_name, item_name):
+    """
+    This method is called once a user has clicked "YES" to confirm the deletion
+    of an item. The item WILL BE DELETED if this method is called
+    """
     try:
         category = session.query(Category).filter_by(name=category_name).one()
     except:
@@ -352,6 +359,9 @@ def delete_item(category_name, item_name):
 @app.route('/logout')
 @login_required
 def logout():
+    """
+    Logout the current user
+    """
     logout_user()
     return redirect('/')
 
