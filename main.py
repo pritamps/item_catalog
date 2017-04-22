@@ -384,12 +384,12 @@ def full_catalog_json():
     return jsonify(list=[i.serialize for i in items])
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/json')
-def item_json(category_id, item_id):
+@app.route('/catalog/<string:category_name>/<string:item_name>/json')
+def item_json(category_name, item_name):
     """
     JSON endpoint for an individual item
     """
-    item = session.query(Item).filter_by(id=item_id).one()
+    item = session.query(Item).filter_by(name=item_name).one()
     return jsonify(item.serialize)
 
 
