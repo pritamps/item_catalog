@@ -203,8 +203,9 @@ def item_detail_page(category_name, item_name):
                            creator=item.creator)
 
 
+@app.route('/catalog/<string:category_name>/item/add', methods=['POST', 'GET'])
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['POST', 'GET'])
-def item_edit_page(category_name, item_name):
+def item_edit_page(category_name, item_name=None):
     """
     JSON endpoint for an individual item
     """
@@ -219,7 +220,11 @@ def item_edit_page(category_name, item_name):
             return response
 
         try:
-            item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+            if item_name is not None:
+                item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+            else:
+                # Creating new item
+                item = Item(creator=current_user, category=category)
         except:
             response = make_response(json.dumps('DB Error: Item not found'), 404)
             response.headers['Content-Type'] = 'application/json'
@@ -234,7 +239,10 @@ def item_edit_page(category_name, item_name):
     elif request.method == 'POST':
         old_category = session.query(Category).filter_by(name=category_name).one()
         new_category = session.query(Category).filter_by(name=request.form['categories']).one()
-        item = session.query(Item).filter_by(category=old_category).filter_by(name=item_name).one()
+        if item_name is not None:
+            item = session.query(Item).filter_by(category=old_category).filter_by(name=item_name).one()
+        else:
+            item = None
         if item is None:
             item = Item(category=new_category,
                         creator=current_user,
