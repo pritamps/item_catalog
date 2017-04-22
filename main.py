@@ -215,7 +215,7 @@ def item_detail_page(category_name, item_name):
 @login_required
 def item_edit_page(category_name, item_name=None):
     """
-    JSON endpoint for an individual item
+    Page that allows for editing of an item. Note that user *has* to be logged in
     """
 
     if request.method == 'GET':
@@ -230,11 +230,17 @@ def item_edit_page(category_name, item_name=None):
             return response
 
         try:
+            # Check if the item is valid and has been created by the current user
+            new_item = False if item_name is not None else True
+            error = ""
             if item_name is not None:
                 item = session.query(Item).filter_by(
                     category=category).filter_by(
-                    name=item_name).one()
-            else:
+                        name=item_name).one()
+                if item.creator != current_user:
+                    new_item = True
+                    error = "You are not allowed to edit that item. Here, create a new one!"
+            if new_item:
                 # Creating new item
                 item = Item(creator=current_user, category=category)
         except:
@@ -247,7 +253,8 @@ def item_edit_page(category_name, item_name=None):
                                item=item,
                                creator=item.creator,
                                categories=categories,
-                               item_category=item.category)
+                               item_category=item.category
+                               error=error)
 
     elif request.method == 'POST':
         old_category = session.query(Category).filter_by(
@@ -275,6 +282,7 @@ def item_edit_page(category_name, item_name=None):
 
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete')
+@login_required
 def delete(category_name, item_name):
     try:
         category = session.query(Category).filter_by(
@@ -291,9 +299,18 @@ def delete(category_name, item_name):
             item = session.query(Item).filter_by(
                 category=category).filter_by(
                 name=item_name).one()
+            if item.creator != current_user:
+                response = make_response(
+                    json.dumps('DB Error: You do not have permission to delete this item'), 404)
+                response.headers['Content-Type'] = 'application/json'
+                return response
+
         else:
-            # Creating new item
-            item = Item(creator=current_user, category=category)
+            response = make_response(
+                json.dumps('DB Error: Item does not exist'), 404)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
     except:
         response = make_response(
             json.dumps('DB Error: Item not found'), 404)
@@ -308,6 +325,7 @@ def delete(category_name, item_name):
 
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete_confirmed')
+@login_required
 def delete_item(category_name, item_name):
     try:
         category = session.query(Category).filter_by(name=category_name).one()
@@ -341,7 +359,7 @@ def logout():
 @app.route('/catalog.json')
 def full_catalog_json():
     """
-    Just a hello world function to get the ball rolling
+    JSON endpoint that will return the JSON for the full catalog
     """
 
     categories = session.query(Category).all()
@@ -371,6 +389,7 @@ def category_items(category_id):
     JSON endpoint for all items in a single category
     """
     items = session.query(Item).filter_by(category_id=category_id).all()
+    return jsonify(list=[i.serialize for i in items])
 
 
 @app.route('/category/<int:category_id>/items/json')
