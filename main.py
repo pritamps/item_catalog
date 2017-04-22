@@ -210,23 +210,40 @@ def item_edit_page(category_name, item_name):
     """
 
     if request.method == 'GET':
-        category = session.query(Category).filter_by(name=category_name).one()
-        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        try:
+            category = session.query(Category).filter_by(name=category_name).one()
+            categories = session.query(Category).all()
+        except:
+            response = make_response(json.dumps('DB Error: Category does not exist'), 404)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
+        try:
+            item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        except:
+            response = make_response(json.dumps('DB Error: Item not found'), 404)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
         return render_template('item_edit.html',
                                item=item,
-                               creator=item.creator)
+                               creator=item.creator,
+                               categories=categories,
+                               item_category=item.category)
 
     elif request.method == 'POST':
-        category = session.query(Category).filter_by(name=category_name).one()
-        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        old_category = session.query(Category).filter_by(name=category_name).one()
+        new_category = session.query(Category).filter_by(name=request.form['categories']).one()
+        item = session.query(Item).filter_by(category=old_category).filter_by(name=item_name).one()
         if item is None:
-            item = Item(category=category,
+            item = Item(category=new_category,
                         creator=current_user,
                         description=request.form['description'],
                         name=request.form['name'])
             session.add(item)
         else:
             item.name = request.form['name']
+            item.category = new_category
             item.description = request.form['description']
         session.commit()
         return redirect('/')

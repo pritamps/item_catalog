@@ -8,7 +8,18 @@
         {% if current_user == creator %}  
             <div class="row">
                 <div class="col-md-3"> <h4> Name </h4> </div> 
-                <div class="col-md-9"> <textarea name="name">{{item.name}}</textarea> </div>
+                <div class="col-md-4"> <textarea name="name">{{item.name}}</textarea> </div>
+                <div class="col-md-5"> 
+                    <select name="categories">
+                    {% for category in categories %}
+                        {% if item.category == category %}
+                            <option value="{{category.name}}" selected>{{category.name}}</option>
+                        {% else %}
+                            <option value="{{category.name}}">{{category.name}}</option> 
+                        {% endif %}
+                    {% endfor %}
+                    </select>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-3"> <h4> Description </h4> </div> 

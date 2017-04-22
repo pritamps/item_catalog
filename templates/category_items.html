@@ -5,14 +5,14 @@
     <div class="col-md-3">
         <h2 class="text-uppercase">Categories</h2>
         {% for c in categories %}
-        <a href="/catalog/{{c.name}}/items">{{c.name}}</a>
-        <br>
+            <a href="/catalog/{{c.name}}/items">{{c.name}}</a>
+            <br>
         {% endfor %}
     </div>
     <div class="col-md-9 text-right">
         <h2 class="text-uppercase">{{ category.name }} Items ( {{ items|length }} items )</h2>
         {% for i in items %}
-        <a href="/catalog/{{category.name}}/{{i.name}}">{{i.name}}</a>
+            <a href="/catalog/{{category.name}}/{{i.name}}">{{i.name}}</a>
         <br>
         {% endfor %}
     </div>

@@ -93,14 +93,14 @@ input[type=text] {
 }
 
 textarea[name="name"] {
-  width: 500px;
-  height: 100px;
+  width: 100%;
+  height: 30px;
   font-size: 17px;
   font-family: monospace;
 }
 
 textarea[name="description"] {
-  width: 500px;
+  width: 100%;
   height: 400px;
   font-size: 17px;
   font-family: monospace;
