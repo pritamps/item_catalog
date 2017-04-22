@@ -197,14 +197,17 @@ def item_detail_page(category_name, item_name):
     JSON endpoint for an individual item
     """
     category = session.query(Category).filter_by(name=category_name).one()
-    item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+    item = session.query(Item).filter_by(
+           category=category).filter_by(
+           name=item_name).one()
     return render_template('item_detail.html',
                            item=item,
                            creator=item.creator)
 
 
 @app.route('/catalog/<string:category_name>/item/add', methods=['POST', 'GET'])
-@app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['POST', 'GET'])
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit',
+           methods=['POST', 'GET'])
 def item_edit_page(category_name, item_name=None):
     """
     JSON endpoint for an individual item
@@ -212,21 +215,26 @@ def item_edit_page(category_name, item_name=None):
 
     if request.method == 'GET':
         try:
-            category = session.query(Category).filter_by(name=category_name).one()
+            category = session.query(Category).filter_by(
+                name=category_name).one()
             categories = session.query(Category).all()
         except:
-            response = make_response(json.dumps('DB Error: Category does not exist'), 404)
+            response = make_response(
+                json.dumps('DB Error: Category does not exist'), 404)
             response.headers['Content-Type'] = 'application/json'
             return response
 
         try:
             if item_name is not None:
-                item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+                item = session.query(Item).filter_by(
+                    category=category).filter_by(
+                    name=item_name).one()
             else:
                 # Creating new item
                 item = Item(creator=current_user, category=category)
         except:
-            response = make_response(json.dumps('DB Error: Item not found'), 404)
+            response = make_response(
+                json.dumps('DB Error: Item not found'), 404)
             response.headers['Content-Type'] = 'application/json'
             return response
 
@@ -237,10 +245,14 @@ def item_edit_page(category_name, item_name=None):
                                item_category=item.category)
 
     elif request.method == 'POST':
-        old_category = session.query(Category).filter_by(name=category_name).one()
-        new_category = session.query(Category).filter_by(name=request.form['categories']).one()
+        old_category = session.query(Category).filter_by(
+            name=category_name).one()
+        new_category = session.query(Category).filter_by(
+            name=request.form['categories']).one()
         if item_name is not None:
-            item = session.query(Item).filter_by(category=old_category).filter_by(name=item_name).one()
+            item = session.query(Item).filter_by(
+                category=old_category).filter_by(
+                    name=item_name).one()
         else:
             item = None
         if item is None:
@@ -260,15 +272,50 @@ def item_edit_page(category_name, item_name=None):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete')
 def delete(category_name, item_name):
     try:
-        category = session.query(Category).filter_by(name=category_name).one()
+        category = session.query(Category).filter_by(
+            name=category_name).one()
         categories = session.query(Category).all()
     except:
-        response = make_response(json.dumps('DB Error: Category does not exist'), 404)
+        response = make_response(
+            json.dumps('DB Error: Category does not exist'), 404)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     try:
-        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+        if item_name is not None:
+            item = session.query(Item).filter_by(
+                category=category).filter_by(
+                name=item_name).one()
+        else:
+            # Creating new item
+            item = Item(creator=current_user, category=category)
+    except:
+        response = make_response(
+            json.dumps('DB Error: Item not found'), 404)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    return render_template('item_delete_confirmation.html',
+                           item=item,
+                           creator=item.creator,
+                           categories=categories,
+                           item_category=item.category)
+
+
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete_confirmed')
+def delete_item(category_name, item_name):
+    try:
+        category = session.query(Category).filter_by(name=category_name).one()
+    except:
+        response = make_response(
+            json.dumps('DB Error: Category does not exist'), 404)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        item = session.query(Item).filter_by(
+            category=category).filter_by(
+                name=item_name).one()
     except:
         response = make_response(json.dumps('DB Error: Item not found'), 404)
         response.headers['Content-Type'] = 'application/json'
@@ -286,8 +333,8 @@ def logout():
     return redirect('/')
 
 
-@app.route('/hello')
-def hello_world():
+@app.route('/catalog.json')
+def full_catalog_json():
     """
     Just a hello world function to get the ball rolling
     """
