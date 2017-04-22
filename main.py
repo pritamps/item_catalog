@@ -198,7 +198,7 @@ def category_list(category_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>')
 def item_detail_page(category_name, item_name):
     """
-    JSON endpoint for an individual item
+    Detail page view for an individual item. Displays all item details
     """
     category = session.query(Category).filter_by(name=category_name).one()
     item = session.query(Item).filter_by(
@@ -212,6 +212,7 @@ def item_detail_page(category_name, item_name):
 @app.route('/catalog/<string:category_name>/item/add', methods=['POST', 'GET'])
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit',
            methods=['POST', 'GET'])
+@login_required
 def item_edit_page(category_name, item_name=None):
     """
     JSON endpoint for an individual item
