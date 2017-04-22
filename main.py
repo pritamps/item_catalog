@@ -257,6 +257,28 @@ def item_edit_page(category_name, item_name=None):
         return redirect('/')
 
 
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete')
+def delete(category_name, item_name):
+    try:
+        category = session.query(Category).filter_by(name=category_name).one()
+        categories = session.query(Category).all()
+    except:
+        response = make_response(json.dumps('DB Error: Category does not exist'), 404)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    try:
+        item = session.query(Item).filter_by(category=category).filter_by(name=item_name).one()
+    except:
+        response = make_response(json.dumps('DB Error: Item not found'), 404)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    session.delete(item)
+    session.commit()
+    return redirect('/')
+
+
 @app.route('/logout')
 @login_required
 def logout():
