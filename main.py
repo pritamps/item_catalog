@@ -48,7 +48,7 @@ def load_user(user_id):
 
 
 @app.route('/login')
-def showLogin():
+def login():
     """
     Create anti forgery token and display login plage
     """
@@ -136,6 +136,10 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
+
+    login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
 
     # Check if user exists in the DB and if not, create a new user
     email = data['email']
